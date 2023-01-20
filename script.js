@@ -1,16 +1,37 @@
 NodeList.prototype.indexOf = Array.prototype.indexOf;
 // shoutout to stackoverflow
 
+const Player = (name, marker) => {
+    return {name, marker};
+}
+
 function Gameplay() {
     let tiles = [];
     let gameboard = new Gameboard();
     let needsReset = false;
 
+    let buttons = '';
+
+    const you = Player('You', 'X');
+    const opponent = Player('Opponent', 'O');
+
+    let whoseTurn = you;
+
     let makeSelection = function(button, index) {
         if (button.classList == 'unclicked' && tiles[index] == '') {
-            gameboard.disableButton(button);
-            tiles[index] = 'X';
-            button.textContent = 'X';
+            let marker = whoseTurn.marker;
+            gameboard.disableButton(button, marker);
+            tiles[index] = marker;
+            console.log(tiles);
+            if (whoseTurn == you) {
+                whoseTurn = opponent;
+                let freeSpace = Math.floor(Math.random()*8);
+                while (tiles[freeSpace] !== '') {
+                    freeSpace = Math.floor(Math.random()*8);
+                }
+                buttons[freeSpace].click();
+                whoseTurn = you;
+            }
         } else {console.error('makeSelection fired, but nothing happened')}
     }
 
@@ -23,7 +44,8 @@ function Gameplay() {
 
         tiles = ['', '', '', '', '', '', '', '', ''];
         gameboard.populateTiles(tiles);
-        let buttons = document.querySelectorAll('.unclicked');
+        buttons = document.querySelectorAll('.unclicked')
+        
         for (let button of buttons) {
             button.addEventListener('click', makeSelection.bind(Gameplay, button, buttons.indexOf(button)));
         }
@@ -57,11 +79,14 @@ function Gameboard() {
         }
     }
 
-    this.disableButton =(button)=> {
+    this.disableButton =(button, marker)=> {
         button.classList.remove('unclicked');
         button.classList.add('clicked');
+        button.textContent = marker;
         button.disabled = true;
     }
 }
+
+
 
 const game = new Gameplay();
