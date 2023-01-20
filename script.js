@@ -1,18 +1,41 @@
+NodeList.prototype.indexOf = Array.prototype.indexOf;
+// shoutout to stackoverflow
+
 function Gameplay() {
     let tiles = [];
     let gameboard = new Gameboard();
+    let needsReset = false;
 
-    this.wipeGame =()=> {
-        tiles = [];
-        gameboard.clearBoard();
-        console.log('Game is wiped.');
+    let makeSelection = function(button, index) {
+        if (button.classList == 'unclicked' && tiles[index] == '') {
+            gameboard.disableButton(button);
+            tiles[index] = 'X';
+            button.textContent = 'X';
+        } else {console.error('makeSelection fired, but nothing happened')}
     }
 
-    this.newGame =()=> {
+    let setGame = function() {
+        if (needsReset) {
+            tiles = [];
+            gameboard.clearBoard();
+            console.warn('Board is reset.');
+        }
+
         tiles = ['', '', '', '', '', '', '', '', ''];
-        gameboard.populateGameWith(tiles);
-        console.log('Game is created.');
+        gameboard.populateTiles(tiles);
+        let buttons = document.querySelectorAll('.unclicked');
+        for (let button of buttons) {
+            button.addEventListener('click', makeSelection.bind(Gameplay, button, buttons.indexOf(button)));
+        }
+
+        needsReset = true;
+        console.warn('New game created.');
     }
+
+    let resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener('click', setGame);
+
+    setGame();
 }
 
 function Gameboard() {
@@ -21,52 +44,24 @@ function Gameboard() {
     this.clearBoard =()=> {
         let tile = board.lastElementChild;
         while (tile) {
-            board.removeChild();
+            board.removeChild(tile);
             tile = board.lastElementChild;
         }
-        console.log('Board is wiped.');
     }
 
-    this.populateGameWith =(tiles)=> {
+    this.populateTiles =(tiles)=> {
         for (let tile in tiles) {
             let button = document.createElement('button');
+            button.classList.add('unclicked');
             board.appendChild(button);
         }
+    }
+
+    this.disableButton =(button)=> {
+        button.classList.remove('unclicked');
+        button.classList.add('clicked');
+        button.disabled = true;
     }
 }
 
 const game = new Gameplay();
-game.newGame();
-
-// game.wipeGame();
-
-// function Gameboard() {
-//     let board = document.getElementById('board');
-//     let tiles = [];
-    
-//     this.clearBoard =()=> {
-//         let child = board.lastElementChild;
-//         while (child) {
-//             board.removeChild();
-//             child = board.lastElementChild;
-//         };
-//         tiles = [];
-//     };
-    
-//     this.populateBoard =()=> {
-//         for (let i = 0; i < 9; i++) {
-//             let button = document.createElement('button');
-//             tiles[i] = '';
-//             button.addEventListener('click', function() {
-//                 button.textContent = 'X';
-//                 button.disabled = 'true';
-//                 tiles[i] = 'X';
-//                 console.log(tiles);
-//             });
-//             board.appendChild(button);
-//         };
-//     };
-// }
-
-// const game = new Gameboard();
-// game.populateBoard();
