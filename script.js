@@ -1,6 +1,9 @@
 NodeList.prototype.indexOf = Array.prototype.indexOf;
 // shoutout to stackoverflow
 
+
+
+
 const Player = (name, marker) => {
     return {name, marker};
 }
@@ -16,6 +19,42 @@ function Gameplay() {
     const opponent = Player('Opponent', 'O');
 
     let whoseTurn = you;
+    let winner = '';
+
+    let winStates = [[0, 3, 6],
+                     [1, 4, 7],
+                     [2, 5, 8],
+                     [0, 1, 2],
+                     [3, 4, 5],
+                     [6, 7, 8],
+                     [0, 4, 8],
+                     [2, 4, 6]]
+
+    let checkWinCondition =()=> {
+        let tileset = [];
+        for (let tile in tiles) {
+            if (tiles[tile] === whoseTurn.marker) tileset.push(parseInt(tile));
+        }
+
+        console.log(whoseTurn.name + ": " + tileset);
+
+        for (let winState of winStates) {
+            let counter = 0;
+            for (let win of winState) {
+                if (tileset.includes(win)) counter++;
+                if (counter == 3) announceWinner(whoseTurn.name, winState);
+            }
+        }
+    }
+
+    let announceWinner =(name, numbers)=> {
+        for (let button of buttons) {
+            button.disabled = true;
+        }
+        for (let n of numbers) {
+            buttons[n].classList.add('winner');
+        } 
+    }
 
     let makeSelection = function(button, index) {
         if (button.classList == 'unclicked' && tiles[index] == '') {
@@ -23,13 +62,15 @@ function Gameplay() {
             gameboard.disableButton(button, marker);
             tiles[index] = marker;
             console.log(tiles);
-            if (whoseTurn == you) {
+            if (whoseTurn == you) checkWinCondition();
+            if (whoseTurn == you && tiles.indexOf('') > -1 && winner == '') {
                 whoseTurn = opponent;
                 let freeSpace = Math.floor(Math.random()*8);
                 while (tiles[freeSpace] !== '') {
                     freeSpace = Math.floor(Math.random()*8);
                 }
                 buttons[freeSpace].click();
+                checkWinCondition();
                 whoseTurn = you;
             }
         } else {console.error('makeSelection fired, but nothing happened')}
