@@ -1,133 +1,74 @@
 NodeList.prototype.indexOf = Array.prototype.indexOf;
 // shoutout to stackoverflow
 
-
-
-
-const Player = (name, marker) => {
-    return {name, marker};
+const Player =(name, marker, isAI)=> {
+    return {name, marker, isAI};
 }
 
-function Gameplay() {
+const Game =(()=> {
     let tiles = [];
-    let gameboard = new Gameboard();
-    let needsReset = false;
+    let flagReset = false;
 
-    let buttons = '';
+    const p1 = Player('Bob', 'O', false); // <img src="/resources/o.svg">
+    const p2 = Player('Eve', 'X', true); // <img src="/resources/x.svg">
 
-    const you = Player('You', 'X');
-    const opponent = Player('Opponent', 'O');
+    let whoseTurn = p1;
 
-    let whoseTurn = you;
-    let winner = '';
+    const combos = [[0, 3, 6], [1, 4, 7], [2, 5, 8], // vertical combos
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // horizontal combos
+                    [0, 4, 8], [2, 4, 6]]; // diagonal combos
 
-    let winStates = [[0, 3, 6],
-                     [1, 4, 7],
-                     [2, 5, 8],
-                     [0, 1, 2],
-                     [3, 4, 5],
-                     [6, 7, 8],
-                     [0, 4, 8],
-                     [2, 4, 6]]
+    const setGame = function() {
+        tiles = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+        whoseTurn = p1;
+        console.warn('New game created.');
+        console.log(tiles);
+    }
 
-    let checkWinCondition =()=> {
+    setGame(); // set the game once when page loads
+
+    const makeChoice = function(choice) {
+        if (tiles[choice] === ' ') {
+            tiles[choice] = whoseTurn.marker;
+            console.warn(whoseTurn.name + " placed " + whoseTurn.marker + " on index " + choice);
+            console.log(tiles);
+            if (!tiles.includes(' ')) {
+                console.warn('There are no free spaces. It\'s a draw.');
+                setGame();
+            } else if (checkForCombo()) {
+                console.warn(whoseTurn.name + " got 3 in a row!");
+                setGame();
+            } else {
+                whoseTurn = (whoseTurn == p1) ? p2 : p1 ;
+                if (whoseTurn.isAI) {
+                    let freeSpace = Math.floor(Math.random()*8);
+                    while (tiles[freeSpace] !== ' ') {
+                        freeSpace = Math.floor(Math.random()*8);
+                    }
+                    makeChoice(freeSpace);
+                }
+            }
+        } else {
+            console.warn('This tile is taken, ' + whoseTurn.name + '.')
+        }
+    }
+
+    const checkForCombo = function() {
         let tileset = [];
         for (let tile in tiles) {
             if (tiles[tile] === whoseTurn.marker) tileset.push(parseInt(tile));
         }
 
-        console.log(whoseTurn.name + ": " + tileset);
+        console.log(whoseTurn.name + ' currently has tiles in indices ' + tileset);
 
-        for (let winState of winStates) {
+        for (let combo of combos) {
             let counter = 0;
-            for (let win of winState) {
-                if (tileset.includes(win)) counter++;
-                if (counter == 3) announceWinner(whoseTurn.name, winState);
+            for (let n of combo) {
+                if (tileset.includes(n)) counter++;
+                if (counter === 3) return true;
             }
         }
     }
 
-    let announceWinner =(name, numbers)=> {
-        for (let button of buttons) {
-            button.disabled = true;
-        }
-        for (let n of numbers) {
-            buttons[n].classList.add('winner');
-        } 
-    }
-
-    let makeSelection = function(button, index) {
-        if (button.classList == 'unclicked' && tiles[index] == '') {
-            let marker = whoseTurn.marker;
-            gameboard.disableButton(button, marker);
-            tiles[index] = marker;
-            console.log(tiles);
-            if (whoseTurn == you) checkWinCondition();
-            if (whoseTurn == you && tiles.indexOf('') > -1 && winner == '') {
-                whoseTurn = opponent;
-                let freeSpace = Math.floor(Math.random()*8);
-                while (tiles[freeSpace] !== '') {
-                    freeSpace = Math.floor(Math.random()*8);
-                }
-                buttons[freeSpace].click();
-                checkWinCondition();
-                whoseTurn = you;
-            }
-        } else {console.error('makeSelection fired, but nothing happened')}
-    }
-
-    let setGame = function() {
-        if (needsReset) {
-            tiles = [];
-            gameboard.clearBoard();
-            console.warn('Board is reset.');
-        }
-
-        tiles = ['', '', '', '', '', '', '', '', ''];
-        gameboard.populateTiles(tiles);
-        buttons = document.querySelectorAll('.unclicked')
-        
-        for (let button of buttons) {
-            button.addEventListener('click', makeSelection.bind(Gameplay, button, buttons.indexOf(button)));
-        }
-
-        needsReset = true;
-        console.warn('New game created.');
-    }
-
-    let resetButton = document.getElementById('resetButton');
-    resetButton.addEventListener('click', setGame);
-
-    setGame();
-}
-
-function Gameboard() {
-    let board = document.getElementById('board');
-
-    this.clearBoard =()=> {
-        let tile = board.lastElementChild;
-        while (tile) {
-            board.removeChild(tile);
-            tile = board.lastElementChild;
-        }
-    }
-
-    this.populateTiles =(tiles)=> {
-        for (let tile in tiles) {
-            let button = document.createElement('button');
-            button.classList.add('unclicked');
-            board.appendChild(button);
-        }
-    }
-
-    this.disableButton =(button, marker)=> {
-        button.classList.remove('unclicked');
-        button.classList.add('clicked');
-        button.textContent = marker;
-        button.disabled = true;
-    }
-}
-
-
-
-const game = new Gameplay();
+    return {makeChoice, setGame};
+})();
