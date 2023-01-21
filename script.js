@@ -10,7 +10,13 @@ const Game =(()=> {
     let flagReset = false;
 
     const p1 = Player('Bob', 'O', false); // <img src="/resources/o.svg">
-    const p2 = Player('Eve', 'X', true); // <img src="/resources/x.svg">
+    const p2 = Player('Eve', 'X', false); // <img src="/resources/x.svg">
+
+    const setP1Mode = function(mode) {
+        p1.isAI = mode;
+    }; const setP2Mode = function(mode) {
+        p2.isAI = mode;
+    } // more elegant way to write this?
 
     let whoseTurn = p1;
 
@@ -41,9 +47,9 @@ const Game =(()=> {
             } else {
                 whoseTurn = (whoseTurn == p1) ? p2 : p1 ;
                 if (whoseTurn.isAI) {
-                    let freeSpace = Math.floor(Math.random()*8);
+                    let freeSpace = Math.floor(Math.random()*9);
                     while (tiles[freeSpace] !== ' ') {
-                        freeSpace = Math.floor(Math.random()*8);
+                        freeSpace = Math.floor(Math.random()*9);
                     }
                     makeChoice(freeSpace);
                 }
@@ -70,5 +76,12 @@ const Game =(()=> {
         }
     }
 
-    return {makeChoice, setGame};
+    return {makeChoice, setGame, setP1Mode, setP2Mode};
 })();
+
+// secret function to allow both AIs to fight to the death. this is the most important part of the project.
+const fight = function() {
+    Game.setP1Mode(true);
+    Game.setP2Mode(true);
+    Game.makeChoice(Math.floor(Math.random()*9));
+}
