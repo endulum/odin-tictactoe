@@ -5,35 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-Tac-Toe</title>
-    <style>
-        #board {
-            border: 1px solid;
-            width: 300px;
-            height: 300px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
-            padding: 10px;
-        }
-
-        .winner {
-            border: 3px solid red;
-            color: red;
-        }
-        
-        button img {
-            width: 50px;
-            height: 50px;
-        }
-    </style>
+    <link rel="stylesheet" href="/resources/style.css">
 </head>
 <body>
-    <div id="board"></div>
-    <br>
-    <button id="reset">Reset Game</button>
+    <main>
+        <div id="board"></div>
+        <!-- <div id="overlay">
+            <div>
+                <button id="pvp">Human vs. Human</button>
+                <small>Compete with each other using manual choices.</small>
+            </div>
+            <div>
+                <button id="pvc">Human vs. Computer</button>
+                <small>Compete with random choices.</small>
+            </div>
+            <div>
+                <button id="cvc">Computer vs. Computer</button>
+                <small>Watch two random choosers compete.</small>
+            </div>
+        </div> -->
+        <button id="reset">Reset Board</button>
+        <button id="menu">Back to Menu</button>
+    </main>
     <script src="script.js"></script>
-    <!-- <img src="/resources/o.svg" alt="">
-    <img src="/resources/x.svg" alt=""> -->
 </body>
 </html>
