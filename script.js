@@ -12,7 +12,7 @@ const Game =(()=> {
     let needsReset = false;
 
     const p1 = Player('Bob', '<img src="/resources/o.svg">', false); // 
-    const p2 = Player('Eve', '<img src="/resources/x.svg">', true); // 
+    const p2 = Player('Eve', '<img src="/resources/x.svg">', false); // 
 
     const setP1Mode = function(mode) {
         p1.isAI = mode;
@@ -28,10 +28,10 @@ const Game =(()=> {
 
     const Board =(()=> {
         const board = document.getElementById('board');
+        const broadcast = document.getElementById('broadcast');
         let buttons;
 
         const clear = function() {
-            console.warn('Emptying board.');
             let button = board.lastElementChild;
             while (button) {
                 board.removeChild(button);
@@ -40,7 +40,6 @@ const Game =(()=> {
         }
 
         const populate = function(tiles) {
-            console.warn('Creating new board.');
             for (let tile in tiles) {
                 let button = document.createElement('button');
                 button.addEventListener('click', select.bind(Board, parseInt(tile)));
@@ -67,17 +66,14 @@ const Game =(()=> {
         const togglePlayable = function() {
             document.querySelectorAll('.unclicked').forEach((b) => {
                 b.classList.toggle('thinking');
-                // if (b.classList === 'unclicked') {
-                //     console.log('removing the think');
-                //     b.classList.toggle('thinking');
-                // } else {
-                //     console.log('adding the think');
-                //     b.classList.toggle('thinking');
-                // };
             });
         }
 
-        return {clear, populate, buttons, highlight, togglePlayable};
+        const log = function(string) {
+            broadcast.textContent = string;
+        }
+
+        return {clear, populate, buttons, highlight, togglePlayable, log};
     })();
 
     const setGame = function() {
@@ -87,20 +83,21 @@ const Game =(()=> {
         whoseTurn = p1;
         needsReset = true;
         Board.buttons = document.querySelectorAll('#board > button');
+        Board.log('Ready to play.')
     }
 
     const makeChoice = function(choice) {
         if (tiles[choice] === ' ') {
             tiles[choice] = whoseTurn.marker;
-            console.log(whoseTurn.name + " placed their mark on index " + choice);
+            Board.log(whoseTurn.name + " placed their mark on index " + choice);
             if (checkForCombo()) {
-                console.warn(whoseTurn.name + ' got 3 in a row!');
+                Board.log(whoseTurn.name + ' got 3 in a row!');
             } else if (!tiles.includes(' ')) {
-                console.warn('There are no free spaces. It\'s a draw.');
+                Board.log('There are no free spaces. It\'s a draw.');
             } else {
                 whoseTurn = (whoseTurn == p1) ? p2 : p1 ;
                 if (whoseTurn.isAI) {
-                    console.log(whoseTurn.name + " is thinking...");
+                    Board.log(whoseTurn.name + " is thinking...");
                     Board.togglePlayable();
                     let freeSpace;
                     do {freeSpace = Math.floor(Math.random()*9);}
@@ -112,7 +109,7 @@ const Game =(()=> {
                 }
             }
         } else {
-            console.warn('This tile is taken, ' + whoseTurn.name + '.')
+            Board.log('This tile is taken, ' + whoseTurn.name + '.')
         }
     }
 
