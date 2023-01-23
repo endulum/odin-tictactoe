@@ -51,7 +51,6 @@ const Game =(()=> {
 
         const select = function(index) {
             Board.buttons[index].innerHTML = whoseTurn.marker;
-            Board.buttons[index].disabled = true;
             Board.buttons[index].classList.remove('unclicked');
             Board.buttons[index].classList.add('clicked');
             // 'buttons' does not work but 'Board.buttons' does. why?
@@ -67,7 +66,14 @@ const Game =(()=> {
 
         const togglePlayable = function() {
             document.querySelectorAll('.unclicked').forEach((b) => {
-                b.disabled = (b.disabled == true) ? false : true;
+                b.classList.toggle('thinking');
+                // if (b.classList === 'unclicked') {
+                //     console.log('removing the think');
+                //     b.classList.toggle('thinking');
+                // } else {
+                //     console.log('adding the think');
+                //     b.classList.toggle('thinking');
+                // };
             });
         }
 
