@@ -11,8 +11,8 @@ const Game =(()=> {
     let tiles = [];
     let needsReset = false;
 
-    const p1 = Player('Bob', 'O', false); // <img src="/resources/o.svg">
-    const p2 = Player('Eve', 'X', true); // <img src="/resources/x.svg">
+    const p1 = Player('Bob', '<img src="/resources/o.svg">', false); // 
+    const p2 = Player('Eve', '<img src="/resources/x.svg">', true); // 
 
     const setP1Mode = function(mode) {
         p1.isAI = mode;
@@ -86,19 +86,20 @@ const Game =(()=> {
     const makeChoice = function(choice) {
         if (tiles[choice] === ' ') {
             tiles[choice] = whoseTurn.marker;
-            console.log(whoseTurn.name + " placed " + whoseTurn.marker + " on index " + choice);
+            console.log(whoseTurn.name + " placed their mark on index " + choice);
             if (checkForCombo()) {
                 console.warn(whoseTurn.name + ' got 3 in a row!');
             } else if (!tiles.includes(' ')) {
                 console.warn('There are no free spaces. It\'s a draw.');
             } else {
                 whoseTurn = (whoseTurn == p1) ? p2 : p1 ;
-                if (whoseTurn.isAI) { // give time to let AI "think"
+                if (whoseTurn.isAI) {
+                    console.log(whoseTurn.name + " is thinking...");
                     Board.togglePlayable();
                     let freeSpace;
                     do {freeSpace = Math.floor(Math.random()*9);}
                     while (tiles[freeSpace] !== ' ');
-                    sleep(500).then(() => {
+                    sleep(1000).then(() => {
                         Board.togglePlayable();
                         Board.buttons[freeSpace].click();
                     });
@@ -127,6 +128,8 @@ const Game =(()=> {
     }
 
     setGame();
+
+    document.getElementById('reset').addEventListener('click', setGame);
 
     return {makeChoice, setGame, setP1Mode, setP2Mode};
 })();
