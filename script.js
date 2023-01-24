@@ -11,8 +11,8 @@ const Game =(()=> {
     let tiles = [];
     let needsReset = false;
 
-    const p1 = Player('Bob', '<img src="/resources/o.svg">', false); // 
-    const p2 = Player('Eve', '<img src="/resources/x.svg">', true); // 
+    const p1 = Player('You', '<img src="/resources/o.svg">', false); // 
+    const p2 = Player('The computer', '<img src="/resources/x.svg">', true); // 
 
     const setP1Mode = function(mode) {
         p1.isAI = mode;
@@ -98,13 +98,13 @@ const Game =(()=> {
                 case 'pvp': 
                     p1.isAI = false; 
                     p2.isAI = false;
-                    p1.name = prompt('Please enter your name.');
-                    p2.name = prompt('Please enter your opponent\'s name.');
+                    p1.name = prompt('Please enter Player 1\'s name.');
+                    p2.name = prompt('Please enter Player 2\'s name.');
                     break;
                 case 'pvc': 
                     p1.isAI = false; 
                     p2.isAI = true; 
-                    p1.name = prompt('Please enter your name.');
+                    p1.name = 'You'
                     p2.name = 'The computer';
                     break;
                 case 'cvc': 
@@ -160,6 +160,7 @@ const Game =(()=> {
     const checkAIChoice = function() {
         if (whoseTurn.isAI) {
             document.getElementById('reset').style.pointerEvents = 'none';
+            document.getElementById('menu').style.pointerEvents = 'none';
             Board.log(whoseTurn.name + " is thinking...");
             Board.togglePlayable();
             Board.toggleThinking();
@@ -168,6 +169,7 @@ const Game =(()=> {
             while (tiles[freeSpace] !== ' ');
             sleep(1000).then(() => {
                 document.getElementById('reset').style.pointerEvents = 'auto';
+                document.getElementById('menu').style.pointerEvents = 'auto';
                 Board.togglePlayable();
                 Board.toggleThinking();
                 Board.buttons[freeSpace].click();

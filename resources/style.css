@@ -1,3 +1,7 @@
+@font-face {
+  font-family: "Roboto Condensed";
+  src: url(RobotoCondensed.ttf);
+}
 * {
   box-sizing: border-box;
 }
@@ -10,9 +14,11 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, button {
           appearance: none;
   list-style: none;
   border: none;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 body {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)), url(tweed.jpeg);
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -29,6 +35,8 @@ main {
   flex-wrap: wrap;
   max-width: 370px;
   gap: 10px;
+  border: 5px solid white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 main > button {
   width: calc(50% - 5px);
@@ -43,7 +51,7 @@ main > button {
 
 #board {
   background-color: white;
-  width: 350px;
+  width: 340px;
   height: 350px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -77,6 +85,7 @@ main > button {
   background-color: darkgray;
   box-shadow: 0px 5px 0px gray;
   border-bottom: 2px solid gray;
+  cursor: pointer;
 }
 
 .clicked {
@@ -131,5 +140,77 @@ main > button {
   text-align: center;
 }
 #overlay button {
-  border: 1px solid red;
+  background-color: transparent;
+  text-decoration: underline;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+#overlay button:hover {
+  letter-spacing: 1px;
+}
+
+aside {
+  margin-top: 10px;
+  width: 370px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+aside button {
+  background-color: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.4);
+  border-radius: 100%;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+aside button img {
+  width: 20px;
+  height: 20px;
+}
+
+#reset, #menu {
+  position: relative;
+}
+
+#reset::after, #menu::after {
+  position: absolute;
+  bottom: -15px;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: 0.5s ease;
+}
+
+#reset:hover::after, #menu:hover::after {
+  bottom: -20px;
+  opacity: 1;
+}
+
+#reset::after {
+  left: -50%;
+  content: "Reset the board";
+}
+
+#menu::after {
+  left: -45%;
+  content: "Mode Options";
+}
+
+#menu {
+  margin-left: 5px;
+}
+
+.cred {
+  color: white;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-align: right;
+  margin-top: 5px;
+}
+.cred a {
+  color: white;
 }/*# sourceMappingURL=style.css.map */
