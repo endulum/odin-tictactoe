@@ -11,8 +11,8 @@ const Game =(()=> {
     let tiles = [];
     let needsReset = false;
 
-    const p1 = Player('You', '<img src="/resources/o.svg">', false); // 
-    const p2 = Player('The computer', '<img src="/resources/x.svg">', true); // 
+    const p1 = Player('You', '<img src="resources/o.svg">', false); // 
+    const p2 = Player('The computer', '<img src="resources/x.svg">', true); // 
 
     const setP1Mode = function(mode) {
         p1.isAI = mode;
