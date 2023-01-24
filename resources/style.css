@@ -22,7 +22,7 @@ body {
 }
 
 main {
-  border: 1px solid red;
+  background-color: gray;
   padding: 10px;
   display: flex;
   flex-direction: row;
@@ -35,8 +35,14 @@ main > button {
   padding: 10px;
 }
 
+.wrapper {
+  overflow: hidden;
+  position: relative;
+  border-radius: 15px;
+}
+
 #board {
-  border: 1px solid red;
+  background-color: white;
   width: 350px;
   height: 350px;
   display: grid;
@@ -45,7 +51,6 @@ main > button {
   gap: 10px;
   padding: 10px;
   padding-bottom: 15px;
-  border-radius: 15px;
 }
 #board > button > img {
   max-height: 50px;
@@ -53,7 +58,7 @@ main > button {
 }
 
 #broadcast {
-  border: 1px solid red;
+  background-color: white;
   width: 350px;
   padding: 5px;
   border-radius: 15px;
@@ -64,11 +69,14 @@ main > button {
   transition: 0.5s ease;
   border-radius: 10px;
 }
+#board button img {
+  filter: invert(100%);
+}
 
 .unclicked {
   background-color: darkgray;
   box-shadow: 0px 5px 0px gray;
-  border-bottom: 1px solid gray;
+  border-bottom: 2px solid gray;
 }
 
 .clicked {
@@ -83,10 +91,19 @@ main > button {
   border-bottom: 1px solid indianred;
 }
 
-.thinking {
+.inactive {
   background-color: lightgray;
   box-shadow: 0px 0px 0px darkgray;
   border-bottom: 1px solid darkgray;
+}
+
+.clicked, .winner, .inactive {
+  pointer-events: none;
+  margin-top: 5px;
+  margin-bottom: -5px;
+}
+
+.thinking {
   position: relative;
 }
 .thinking::before {
@@ -101,8 +118,18 @@ main > button {
   opacity: 0.25;
 }
 
-.clicked, .winner, .thinking {
-  pointer-events: none;
-  margin-top: 5px;
-  margin-bottom: -5px;
+#overlay {
+  background-color: rgba(255, 255, 255, 0.75);
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+#overlay div {
+  text-align: center;
+}
+#overlay button {
+  border: 1px solid red;
 }/*# sourceMappingURL=style.css.map */

@@ -12,7 +12,7 @@ const Game =(()=> {
     let needsReset = false;
 
     const p1 = Player('Bob', '<img src="/resources/o.svg">', false); // 
-    const p2 = Player('Eve', '<img src="/resources/x.svg">', false); // 
+    const p2 = Player('Eve', '<img src="/resources/x.svg">', true); // 
 
     const setP1Mode = function(mode) {
         p1.isAI = mode;
@@ -65,6 +65,12 @@ const Game =(()=> {
 
         const togglePlayable = function() {
             document.querySelectorAll('.unclicked').forEach((b) => {
+                b.classList.toggle('inactive');
+            });
+        }
+
+        const toggleThinking = function() {
+            document.querySelectorAll('.unclicked', '.inactive').forEach((b) => {
                 b.classList.toggle('thinking');
             });
         }
@@ -73,7 +79,54 @@ const Game =(()=> {
             broadcast.textContent = string;
         }
 
-        return {clear, populate, buttons, highlight, togglePlayable, log};
+        // menu overlay control
+        const menu = document.getElementById('menu');
+        const overlay = document.getElementById('overlay');
+        const invokeOverlay = function() {
+            if (overlay.style.display === 'none') {
+                overlay.style.display = 'flex';
+                document.getElementById('reset').style.pointerEvents = 'none';
+            } else {
+                overlay.style.display = 'none';
+                document.getElementById('reset').style.pointerEvents = 'auto';
+            }
+        }
+        menu.addEventListener('click', invokeOverlay);
+
+        const setMode = function(e) {
+            switch (e.srcElement.id) {
+                case 'pvp': 
+                    p1.isAI = false; 
+                    p2.isAI = false;
+                    p1.name = prompt('Please enter your name.');
+                    p2.name = prompt('Please enter your opponent\'s name.');
+                    break;
+                case 'pvc': 
+                    p1.isAI = false; 
+                    p2.isAI = true; 
+                    p1.name = prompt('Please enter your name.');
+                    p2.name = 'The computer';
+                    break;
+                case 'cvc': 
+                    p1.isAI = true; 
+                    p2.isAI = true;
+                    p1.name = 'Computer 1';
+                    p2.name = 'Computer 2';
+                    // Board.buttons[Math.floor(Math.random()*9)].click();
+                    break;
+            }
+            overlay.style.display = 'none';
+            setGame();
+            menu.style.pointerEvents = 'auto';
+            document.getElementById('reset').style.pointerEvents = 'auto';
+        }
+
+        // .bind(Board, 'pvp')
+        document.getElementById('pvp').addEventListener('click', setMode);
+        document.getElementById('pvc').addEventListener('click', setMode);
+        document.getElementById('cvc').addEventListener('click', setMode);
+
+        return {clear, populate, buttons, highlight, togglePlayable, toggleThinking, log};
     })();
 
     const setGame = function() {
@@ -83,33 +136,42 @@ const Game =(()=> {
         whoseTurn = p1;
         needsReset = true;
         Board.buttons = document.querySelectorAll('#board > button');
-        Board.log('Ready to play.')
+        Board.log('Ready to play.');
+        checkAIChoice();
     }
 
     const makeChoice = function(choice) {
         if (tiles[choice] === ' ') {
             tiles[choice] = whoseTurn.marker;
-            Board.log(whoseTurn.name + " placed their mark on index " + choice);
+            Board.log(whoseTurn.name + ' placed their mark on index ' + choice + '.');
             if (checkForCombo()) {
-                Board.log(whoseTurn.name + ' got 3 in a row!');
+                Board.log(whoseTurn.name + ' got three in a row!');
             } else if (!tiles.includes(' ')) {
                 Board.log('There are no free spaces. It\'s a draw.');
             } else {
                 whoseTurn = (whoseTurn == p1) ? p2 : p1 ;
-                if (whoseTurn.isAI) {
-                    Board.log(whoseTurn.name + " is thinking...");
-                    Board.togglePlayable();
-                    let freeSpace;
-                    do {freeSpace = Math.floor(Math.random()*9);}
-                    while (tiles[freeSpace] !== ' ');
-                    sleep(1000).then(() => {
-                        Board.togglePlayable();
-                        Board.buttons[freeSpace].click();
-                    });
-                }
+                checkAIChoice();
             }
         } else {
             Board.log('This tile is taken, ' + whoseTurn.name + '.')
+        }
+    }
+
+    const checkAIChoice = function() {
+        if (whoseTurn.isAI) {
+            document.getElementById('reset').style.pointerEvents = 'none';
+            Board.log(whoseTurn.name + " is thinking...");
+            Board.togglePlayable();
+            Board.toggleThinking();
+            let freeSpace;
+            do {freeSpace = Math.floor(Math.random()*9);}
+            while (tiles[freeSpace] !== ' ');
+            sleep(1000).then(() => {
+                document.getElementById('reset').style.pointerEvents = 'auto';
+                Board.togglePlayable();
+                Board.toggleThinking();
+                Board.buttons[freeSpace].click();
+            });
         }
     }
 
